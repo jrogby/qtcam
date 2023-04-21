@@ -42,7 +42,7 @@ extern "C" {
 #include "libswscale/swscale.h"
 #include "libavutil/intreadwrite.h"
 #include "libavutil/dict.h"
-//#include "libavcodec/version.h"
+#include "libavcodec/version.h"
 #if LIBAVUTIL_VER_AT_LEAST(52,2)
     #include "libavutil/channel_layout.h"
 #endif
@@ -75,7 +75,7 @@ public:
    VideoEncoder();
    virtual ~VideoEncoder();
 
-   AVOutputFormat *pOutputFormat;
+   const AVOutputFormat *pOutputFormat;
    bool ok;
    AVCodecContext *pCodecCtx,*pAudioCodecCtx;
 
@@ -152,7 +152,7 @@ protected:
     AVFormatContext *pFormatCtx;
     
     AVStream *pVideoStream, *pAudioStream;
-    AVCodec *pCodec;
+    const AVCodec *pCodec;
 
       // Frame data
       AVFrame *ppicture;

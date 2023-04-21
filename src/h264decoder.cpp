@@ -33,7 +33,7 @@ static enum AVPixelFormat get_format(AVCodecContext *ctx,const enum AVPixelForma
 H264Decoder::H264Decoder()
 {
     initVars();
-    av_register_all();    
+///    av_register_all();
 }
 
 H264Decoder::~H264Decoder()
@@ -63,7 +63,7 @@ bool H264Decoder::initH264Decoder(unsigned width, unsigned height)
 
 #if LIBAVCODEC_VER_AT_LEAST(53,6)
     pH264CodecCtx = avcodec_alloc_context3(pH264Codec);
-    avcodec_get_context_defaults3 (pH264CodecCtx, pH264Codec);
+///    avcodec_get_context_defaults3 (pH264CodecCtx, pH264Codec);
 #else
     pH264CodecCtx = avcodec_alloc_context();
     avcodec_get_context_defaults(pH264CodecCtx);
@@ -84,7 +84,7 @@ bool H264Decoder::initH264Decoder(unsigned width, unsigned height)
     pH264CodecCtx->width = width;
     pH264CodecCtx->height = height;
     pH264CodecCtx->thread_count = 10;
-    pH264CodecCtx->thread_safe_callbacks = true;
+///    pH264CodecCtx->thread_safe_callbacks = true;
     pH264CodecCtx->workaround_bugs = FF_BUG_AUTODETECT;
     pH264CodecCtx->err_recognition = 1;
     pH264CodecCtx->thread_type = 3;

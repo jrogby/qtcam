@@ -222,11 +222,11 @@ int main(int argc, char *argv[])
     viewer.rootContext()->setContextProperty("audioChannelCountModel", &audio.audioChannelCountModel);
     viewer.rootContext()->setContextProperty("SystemPictureFolder",QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).first());
     viewer.rootContext()->setContextProperty("SystemVideoFolder",QStandardPaths::standardLocations(QStandardPaths::MoviesLocation).first());
-#if LAUNCHPAD
+//#if LAUNCHPAD
     viewer.setMainQmlFile(QStringLiteral("/usr/share/qml/qtcam/Views/qtcam.qml"));
-#else
+//#else
     viewer.setMainQmlFile(QStringLiteral("qml/qtcam/Views/qtcam.qml"));
-#endif
+//#endif
 
     viewer.rootContext()->setContextProperty("helperQml", &vs.helperObj);
 
