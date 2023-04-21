@@ -85,12 +85,12 @@ bool VideoEncoder::createFile(QString fileName,CodecID encodeType, unsigned widt
         return false;
     }
 #endif
-    pOutputFormat = av_guess_format(NULL, fileName.toStdString().c_str(), NULL);
+    pOutputFormat = (AVOutputFormat*) av_guess_format(NULL, fileName.toStdString().c_str(), NULL);
     if (!pOutputFormat) {
-        pOutputFormat = av_guess_format("mpeg", NULL, NULL);
+        pOutputFormat = (AVOutputFormat*) av_guess_format("mpeg", NULL, NULL);
     }
 #if LIBAVCODEC_VER_AT_LEAST(54,25)
-//    pOutputFormat->video_codec = (AVCodecID)encodeType;
+    pOutputFormat->video_codec = (AVCodecID)encodeType;
 #else
     pOutputFormat->video_codec = (CodecID)encodeType;
 #endif
@@ -99,12 +99,11 @@ bool VideoEncoder::createFile(QString fileName,CodecID encodeType, unsigned widt
     {
         return false;
     }
-///    pOutputFormat->flags |= AVFMT_VARIABLE_FPS; // need to check
+    pOutputFormat->flags |= AVFMT_VARIABLE_FPS; // need to check
 
     pFormatCtx->oformat = pOutputFormat;
 
-///    snprintf(pFormatCtx->filename, sizeof(pFormatCtx->filename), "%s", fileName.toStdString().c_str());
-
+    snprintf(pFormatCtx->url, sizeof(pFormatCtx->url), "%s", fileName.toStdString().c_str());
 
     // find the video encoder
 
@@ -223,7 +222,7 @@ bool VideoEncoder::createFile(QString fileName,CodecID encodeType, unsigned widt
             pOutputFormat->audio_codec = CODEC_ID_MP2;
         #else
             pFormatCtx->audio_codec_id = AV_CODEC_ID_MP2;
-///            pOutputFormat->audio_codec = AV_CODEC_ID_MP2;
+            pOutputFormat->audio_codec = AV_CODEC_ID_MP2;
         #endif
 
         #if !LIBAVCODEC_VER_AT_LEAST(54, 25)
@@ -273,7 +272,7 @@ bool VideoEncoder::closeFile()
     freeFrame();
 
     if(pkt.data != NULL && pkt.size != 0){
-////    	av_free_packet(&pkt);
+        av_packet_unref(&pkt); ///av_free_packet(&pkt);
         pkt.data = NULL;
         pkt.size = 0;
     }
@@ -349,7 +348,7 @@ int VideoEncoder::encodePacket(uint8_t *buffer, uint8_t bufferType){
     int out_size = 0;
 
     if(pkt.data != NULL && pkt.size != 0){
-///       av_free_packet(&pkt);
+       av_packet_unref(&pkt); /// av_free_packet(&pkt);
        pkt.data = NULL;
        pkt.size = 0;
    }
@@ -361,15 +360,16 @@ int VideoEncoder::encodePacket(uint8_t *buffer, uint8_t bufferType){
 
     /* encode the image */
 ///    int ret = avcodec_encode_video(pCodecCtx, &pkt, ppicture, &got_packet);
-///    if (ret < 0) {
-///        char errText[999]="";
-///        av_strerror(ret, errText, 999);
-///        fprintf(stderr, "Error encoding a video frame\n");
-///        av_free_packet(&pkt);
-///        pkt.data = NULL;
-///        pkt.size = 0;
-///        return -1;
-///    }
+    int ret = 0;
+    if (ret < 0) {
+        char errText[999]="";
+        av_strerror(ret, errText, 999);
+        fprintf(stderr, "Error encoding a video frame\n");
+        av_packet_unref(&pkt); ///av_free_packet(&pkt);
+        pkt.data = NULL;
+        pkt.size = 0;
+        return -1;
+    }
 
     pkt.stream_index = pVideoStream->index;
     if (got_packet) {
@@ -391,7 +391,7 @@ int VideoEncoder::encodePacket(uint8_t *buffer, uint8_t bufferType){
         // Added by Navya -- 18 Sep 2019
         // Adjusted timestamps inorder to avoid glitches in recorded video for h264 encoder.
 
-        if(pts_prev == pkt.pts | pkt.pts < pts_prev){
+        if((pts_prev == pkt.pts) | (pkt.pts < pts_prev)){
             pkt.pts = pts_prev+1;  // Incremented the timestamp value,as pkt.pts is maintaining the same value,leading to av_write_interleaved_frame failure.
             pkt.dts = pkt.pts;
         }
@@ -550,7 +550,7 @@ bool VideoEncoder::initFrame()
         return false;
     }
 
-///    int size = avpicture_get_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height);
+    ///int size = avpicture_get_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height);
     int size = 1;
     picture_buf = new uint8_t[size];
     if(picture_buf==0)

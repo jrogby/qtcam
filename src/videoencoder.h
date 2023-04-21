@@ -75,7 +75,7 @@ public:
    VideoEncoder();
    virtual ~VideoEncoder();
 
-   const AVOutputFormat *pOutputFormat;
+   AVOutputFormat *pOutputFormat;
    bool ok;
    AVCodecContext *pCodecCtx,*pAudioCodecCtx;
 

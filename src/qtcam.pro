@@ -6,7 +6,7 @@ DEPLOYMENTFOLDERS = folder_01
 QT += widgets concurrent multimedia
 TARGET = Qtcam
 
-CONFIG += release
+CONFIG += c++11 release
 
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
@@ -140,11 +140,8 @@ HEADERS += \
 
 INCLUDEPATH +=  $$PWD/v4l2headers/include \
                 /usr/include \
+                /usr/include/ffmpeg \
                 /usr/include/libusb-1.0
-
-UNAME_MACHINE_32BIT = $$system(dpkg --print-architecture | grep -o "i386")
-UNAME_MACHINE_64BIT = $$system(dpkg --print-architecture | grep -o "amd64")
-BOARD_ARM64 = $$system(dpkg --print-architecture | grep -o "arm64")
 
 DISTRIBUTION_NAME = $$system(lsb_release -a | grep -o "bionic")
 contains(DISTRIBUTION_NAME,bionic):{
@@ -152,8 +149,14 @@ QMAKE_CXX = "g++-5"
 QMAKE_CXXFLAGS += -std=c++11
 }
 
+UNAME_MACHINE_32BIT = $$system(dpkg --print-architecture | grep -o "i386")
+UNAME_MACHINE_64BIT = $$system(dpkg --print-architecture | grep -o "amd64")
+BOARD_ARM64 = $$system(dpkg --print-architecture | grep -o "arm64")
+
 contains(UNAME_MACHINE_64BIT, amd64):{
     message("x86_64 bit libs")
+    QMAKE_LFLAGS_SHLIB += -Wl --copy-dt-needed-entries
+    LDFLAGS += -Wl,--copy-dt-needed-entries
     LIBS += -lv4l2 -lv4lconvert \       
         -lavutil \
         -lavcodec \

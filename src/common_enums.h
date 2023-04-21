@@ -20,7 +20,7 @@ public:
 
     typedef enum
     {
-        NONE = 0,
+        NONE,
         SEE3CAM_11CUG,
         SEE3CAM_12CUNIR,
         SEE3CAM_CU30,
@@ -77,6 +77,7 @@ public:
         SEE3CAM_50CUGM, //Added By Sushanth
         SEE3CAM_20CUG
     }ECameraNames;
+
     //Enum for capture shot type
     typedef enum
     {
